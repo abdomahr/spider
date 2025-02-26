@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\UserResource;
 
 class ProfileController extends Controller
@@ -16,7 +17,6 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
-     
         $validator = Validator::make($request->all(), [
             'username' => 'sometimes|string|max:255|unique:users,username,' . $user->id,
             'email' => 'sometimes|email|max:255|unique:users,email,' . $user->id,
@@ -37,18 +37,16 @@ class ProfileController extends Controller
         }
         
         if ($request->hasFile('image')) {
-
-            if ($user->image && file_exists(public_path($user->image))) {
-                unlink(public_path($user->image));
+            // حذف الصورة القديمة إذا كانت موجودة
+            if ($user->image) {
+                Storage::disk('public')->delete($user->image);
             }
 
-           
-            $image = $request->file('image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('images'), $imageName);
+            // حفظ الصورة الجديدة في storage/app/public/images
+            $path = $request->file('image')->store('images', 'public');
 
-         
-            $user->image = 'images/' . $imageName;
+            // حفظ مسار الصورة في قاعدة البيانات
+            $user->image = $path;
         }
 
         if ($request->has('password')) {
