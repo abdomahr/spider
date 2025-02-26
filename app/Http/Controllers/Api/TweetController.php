@@ -26,7 +26,7 @@ class TweetController extends Controller
             'content' => 'required|max:255',
         ]);
         auth()->user()->tweets()->create($request->all());
-        return ApiRseponse::sendresponse(201, 'tweet created successfully',$request->content);
+        return ApiRseponse::sendresponse(201, 'tweet created successfully',$request);
 
     }
 

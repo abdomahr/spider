@@ -20,8 +20,8 @@ class RegisterRequest extends FormRequest
         return [
            'email' => 'required|email|unique:users,email',
            'username' => 'required|string|regex:/^\S*$/|min:3|max:20',
-           'password' =>  'required|string|min:8|regex:/[A-Z]/|regex:/[a-z]/|regex:/[0-9]/|regex:/[@$!%*#?&]/',           
-           'image' =>'required|image|mimes:png,jpg|max:1024',          
+            'password' =>  'required|string|min:8',           
+           'image' => 'required|image|mimes:png,jpg|max:5120',           
 
         ];
     }

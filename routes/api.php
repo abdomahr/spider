@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\api\FollowController;
-use App\Http\Controllers\Api\loginController;
+use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\api\TweetController;
 use App\Http\Controllers\api\AuthController;
 use Illuminate\Http\Request;
@@ -19,10 +19,16 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
     Route::post('/register', 'register');
     Route::post('/login', 'login');
     Route::delete('/logout', 'logout')->middleware('auth:sanctum');
+  
 
 });
 
+Route::get('/otp',[AuthController::class,'verifyOtp']);
+
 Route::apiResource('tweets', TweetController::class)->middleware('auth:sanctum');
+
+Route::Put('/Update-Profile',[ProfileController::class,'Update'])->middleware('auth:sanctum');
+
 
 
 

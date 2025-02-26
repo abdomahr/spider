@@ -25,6 +25,11 @@ class User extends Authenticatable
         return $this->hasMany(Follower::class, 'follower_id');
     }
 
+    public function otpGenerator()
+    {
+        return env('APP_ENV') !== 'production' ? 1111 : rand(1000, 9999);
+    }
+
     /**
      * The attributes that are mass assignable.
      *
@@ -35,6 +40,8 @@ class User extends Authenticatable
         'email',
         'password',
         'image',
+        'otp', 
+        'is_verified'
     ];
 
     /**
