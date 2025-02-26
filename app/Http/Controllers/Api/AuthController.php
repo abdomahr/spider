@@ -21,7 +21,10 @@ class AuthController extends Controller
 
         // Store image if provided
         if ($request->hasFile('image')) {
-            $data['image'] = $request->image->store('images', 'public');
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('assets/images'), $imageName);
+            $data['image'] = 'assets/images/' . $imageName; 
         }
 
         // Generate a fake OTP
@@ -36,7 +39,7 @@ class AuthController extends Controller
 
         return ApiRseponse::sendresponse(201, 'User created successfully. Please verify OTP.', [
             'email' => $user->email,
-            'image' => $user->image,
+            'image' => url($user->image),
             'username' => $user->email,
             'otp' => $otp, // Remove this in production!
         ]);
