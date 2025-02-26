@@ -58,7 +58,7 @@ class ProfileController extends Controller
         $user->save();
 
         return response()->json([
-            'message' => 'تم تحديث الملف الشخصي بنجاح.',
+            'message' => 'Profile updated successfully',
             'user' => new UserResource($user),
         ], 200);
     }
