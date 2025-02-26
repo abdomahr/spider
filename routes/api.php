@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\api\FollowController;
+use App\Http\Controllers\Api\FollowController;
 use App\Http\Controllers\Api\ProfileController;
-use App\Http\Controllers\api\TweetController;
-use App\Http\Controllers\api\AuthController;
+use App\Http\Controllers\Api\TweetController;
+use App\Http\Controllers\Api\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
