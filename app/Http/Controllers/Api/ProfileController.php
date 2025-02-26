@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\UserResource;
@@ -17,7 +16,7 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
-   
+     
         $validator = Validator::make($request->all(), [
             'username' => 'sometimes|string|max:255|unique:users,username,' . $user->id,
             'email' => 'sometimes|email|max:255|unique:users,email,' . $user->id,
@@ -38,13 +37,18 @@ class ProfileController extends Controller
         }
         
         if ($request->hasFile('image')) {
-        
-            if ($user->image) {
-                Storage::delete($user->image);
+
+            if ($user->image && file_exists(public_path($user->image))) {
+                unlink(public_path($user->image));
             }
-     
-            $path = $request->file('image')->store('profile_images', 'public');
-            $user->image = $path;
+
+           
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('images'), $imageName);
+
+         
+            $user->image = 'images/' . $imageName;
         }
 
         if ($request->has('password')) {
@@ -54,7 +58,7 @@ class ProfileController extends Controller
         $user->save();
 
         return response()->json([
-            'message' => 'Profile updated successfully.',
+            'message' => 'تم تحديث الملف الشخصي بنجاح.',
             'user' => new UserResource($user),
         ], 200);
     }
