@@ -37,15 +37,15 @@ class ProfileController extends Controller
         }
         
         if ($request->hasFile('image')) {
-            // حذف الصورة القديمة إذا كانت موجودة
+
             if ($user->image) {
                 Storage::disk('public')->delete($user->image);
             }
 
-            // حفظ الصورة الجديدة في storage/app/public/images
+        
             $path = $request->file('image')->store('images', 'public');
 
-            // حفظ مسار الصورة في قاعدة البيانات
+      
             $user->image = $path;
         }
 
@@ -56,7 +56,7 @@ class ProfileController extends Controller
         $user->save();
 
         return response()->json([
-            'message' => 'Profile updated successfully',
+            'message' => 'Profile updated successfully ',
             'user' => new UserResource($user),
         ], 200);
     }
