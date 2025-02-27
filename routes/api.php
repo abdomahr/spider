@@ -28,6 +28,7 @@ Route::get('/otp',[AuthController::class,'verifyOtp']);
 Route::apiResource('tweets', TweetController::class)->middleware('auth:sanctum');
 
 Route::Put('/Update-Profile',[ProfileController::class,'Update'])->middleware('auth:sanctum');
+Route::get('/profile-details',[ProfileController::class,'show'])->middleware('auth:sanctum');
 
 
 

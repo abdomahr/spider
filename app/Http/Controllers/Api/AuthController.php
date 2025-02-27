@@ -21,10 +21,8 @@ class AuthController extends Controller
 
         // Store image if provided
         if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('assets/images'), $imageName);
-            $data['image'] = 'assets/images/' . $imageName; 
+            $path = $request->file('image')->store('images', 'public');
+            $data['image'] = $path; 
         }
 
         // Generate a fake OTP
@@ -37,12 +35,18 @@ class AuthController extends Controller
         // Create user
         $user = User::create($data);
 
-        return ApiRseponse::sendresponse(201, 'User created successfully. Please verify OTP.', [
-            'email' => $user->email,
-            'image' => url($user->image),
-            'username' => $user->email,
-            'otp' => $otp, // Remove this in production!
-        ]);
+
+        return  response()->json([
+            'message' => 'User created successfully. Please verify OTP.',
+            'data' => [
+                'email' => $user->email,
+                'image' => url('storage/' . $user->image),
+                'username' => $user->email,
+                'otp' => $otp, // Remove this in production!
+            ],
+            'status' => 'success'
+        ], 201);
+        
     }
 
     public function login(Request $request)
@@ -55,18 +59,30 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return ApiRseponse::sendresponse(401, 'Login failed. Invalid credentials.');
+            return  response()->json([
+                'message' => 'Login failed. Invalid credentials.',
+                'data' => null,
+                'status' => 'fail'
+            ], 401);
         }
 
         if (!$user->is_verified) {
-            return ApiRseponse::sendresponse(403, 'Please verify your OTP before logging in.');
+            return  response()->json([
+                'message' => 'Please verify your OTP before logging in.',
+                'data' => null,
+                'status' => 'fail'
+            ], 403);
         }
 
         $data['token'] = $user->createToken('token')->plainTextToken;
         $data['username'] = $user->username;
         $data['email'] = $user->email;
 
-        return ApiRseponse::sendresponse(200, 'Login successful', $data);
+        return  response()->json([
+            'message' => 'Login successful',
+            'data' => $data,
+            'status' => 'success'
+        ], 200);
     }
 
 
@@ -80,19 +96,33 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->where('otp', $request->otp)->first();
 
         if (!$user) {
-            return response()->json(['message' => 'Invalid OTP'], 400);
+            return  response()->json([
+                'message' => 'Invalid OTP',
+                'data' => null,
+                'status' => 'fail'
+            ], 400);
         }
 
         $user->update(['is_verified' => true, 'otp' => null]); // OTP should not be reused
 
-        return response()->json(['message' => 'OTP verified successfully. You can now login.']);
+        return  response()->json([
+            'message' => 'OTP verified successfully. You can now login.',
+            'data' => null,
+            'status' => 'success'
+        ], 200);
     }
 
     public function logout(Request $request)
     {
 
         $request->user()->currentAccessToken()->delete();
-        return ApiRseponse::sendresponse(200, 'logout successfully', []);
+
+        return  response()->json([
+            'message' => 'logout successfully',
+            'data' => null,
+            'status' => 'success'
+        ], 200);
+        
     }
 
 }
