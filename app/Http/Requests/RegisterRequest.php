@@ -20,7 +20,7 @@ class RegisterRequest extends FormRequest
         return [
            'email' => 'required|email|unique:users,email',
            'username' => 'required|string|regex:/^\S*$/|min:3|max:20',
-            'password' =>  'required|string|min:8',           
+           'password' => 'sometimes|string|min:8|confirmed',         
            'image' => 'required|image|mimes:png,jpg|max:5120',           
 
         ];
